@@ -1,15 +1,36 @@
-# React + TypeScript + Vite
+# Memory Matrix
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Memory Matrix is a game designed to challenge your working memory and focus. It's an adaptive digital test of numeric working memory, providing clear progression and high replayability.
 
-Currently, two official plugins are available:
+## Core Gameplay
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The game follows a simple loop:
 
-## React Compiler
+1.  **Memorization Phase:** A sequence of numbers is displayed for a set amount of time.
+2.  **Input Phase:** The player recalls the sequence and enters it.
+3.  **Feedback Phase:** The game validates the input and provides feedback.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The difficulty (the number of digits to remember) adapts based on your performance:
+*   **Correct Answer:** The Digit Level increases by 1.
+*   **Incorrect Answer:** The Digit Level decreases by 1 (to a minimum of 1).
+
+The primary score is the **Current Digit Level**, and the **High Score** (the highest level reached) is saved locally in your browser.
+
+## Tech Stack
+
+This project is built with:
+
+*   [React](https://react.dev/)
+*   [TypeScript](https://www.typescriptlang.org/)
+*   [Vite](https://vitejs.dev/)
+
+## Getting Started
+
+To run the project locally:
+
+1.  Clone the repository.
+2.  Install dependencies: `npm install`
+3.  Start the development server: `npm run dev`
 
 ## Expanding the ESLint configuration
 
@@ -71,5 +92,3 @@ export default defineConfig([
   },
 ])
 ```
-# memory-matrix
-# memory-matrix
