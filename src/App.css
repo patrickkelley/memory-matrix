@@ -1,0 +1,64 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  width: 320px;
+  border: 2px solid var(--secondary-blue-light);
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+h1, h2, p {
+  color: var(--primary-white);
+}
+
+h1 {
+  color: var(--secondary-blue-light);
+}
+
+button {
+  background-color: var(--secondary-blue-light);
+  color: var(--primary-blue-dark);
+  border: none;
+  padding: 10px 20px;
+  font-size: 1.2em;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+input {
+  background-color: var(--primary-white);
+  color: var(--primary-blue-dark);
+  border: 1px solid var(--secondary-blue-light);
+  padding: 10px;
+  font-size: 1.2em;
+  text-align: center;
+  border-radius: 5px;
+  width: 80%;
+  margin-top: 10px;
+}
+
+.sequence-text {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 2.5em;
+  letter-spacing: 0.2em;
+  color: var(--secondary-blue-light);
+}
+
+.feedback-correct {
+  color: var(--success-green);
+}
+
+.feedback-incorrect {
+  color: var(--failure-red);
+}
