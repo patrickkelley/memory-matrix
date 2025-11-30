@@ -14,10 +14,17 @@ const HIGH_SCORE_KEY = 'memoryMatrixHighScore';
 function App() {
   const [gameState, setGameState] = useState<GameState>('main_menu');
   const [digitLevel, setDigitLevel] = useState(1);
-  const [highScore, setHighScore] = useState(() => {
+  const [highScore, setHighScore] = useState(1);
+  const [sequence, setSequence] = useState('');
+  const [isCorrect, setIsCorrect] = useState(false);
+
+  // Load high score from local storage on initial render
+  useEffect(() => {
     const savedHighScore = localStorage.getItem(HIGH_SCORE_KEY);
-    return savedHighScore ? parseInt(savedHighScore, 10) : 1;
-  });
+    if (savedHighScore) {
+      setHighScore(parseInt(savedHighScore, 10));
+    }
+  }, []);
 
   // Effect for handling game state logic and timers
   useEffect(() => {
