@@ -24,6 +24,15 @@ This project is built with:
 *   [TypeScript](https://www.typescriptlang.org/)
 *   [Vite](https://vitejs.dev/)
 
+## Continuous Integration
+
+- CI runs on push and pull requests and executes the test suite with coverage.
+- Coverage is published to GitHub Pages and a link to the report is posted on PRs.
+
+**Status**: ![CI](https://github.com/patrickkelley/memory-matrix/actions/workflows/ci.yml/badge.svg)
+
+**Coverage report**: https://patrickkelley.github.io/memory-matrix/
+
 ## Getting Started
 
 To run the project locally:
@@ -31,6 +40,22 @@ To run the project locally:
 1.  Clone the repository.
 2.  Install dependencies: `npm install`
 3.  Start the development server: `npm run dev`
+
+## Running Tests
+
+Run the full test suite with:
+
+```bash
+npm test -- --run
+```
+
+Run tests with coverage (locally):
+
+```bash
+npm test -- --run --coverage
+```
+
+The CI will fail if coverage falls below the thresholds defined in `vitest.config.ts`.
 
 ## Expanding the ESLint configuration
 
