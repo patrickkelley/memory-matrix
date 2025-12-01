@@ -21,7 +21,7 @@ describe('generateSequence randomness and edge cases', () => {
     // Mock Math.random to return values that produce digits 0..9
     const randomValues = Array.from({ length: 10 }, (_, i) => i / 10 + 0.001);
     let call = 0;
-    const spy = vi.spyOn(Math, 'random').mockImplementation(() => {
+    vi.spyOn(Math, 'random').mockImplementation(() => {
       const v = randomValues[call % randomValues.length];
       call++;
       return v;
