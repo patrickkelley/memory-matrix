@@ -33,31 +33,3 @@ jobs:
           name: coverage-report
           path: coverage
 
-      - name: Deploy coverage HTML to GitHub Pages
-        if: success() || failure()
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./coverage/lcov-report
-          publish_branch: gh-pages
-
-      - name: Post coverage URL to PR (or log)
-        if: success() || failure()
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const url = `https://${owner}.github.io/${repo}/`;
-            if (context.payload.pull_request) {
-              const pr = context.payload.pull_request.number;
-              await github.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number: pr,
-                body: `Coverage report published: ${url}`,
-              });
-            } else {
-              core.info(`Coverage report published: ${url}`);
-            }
