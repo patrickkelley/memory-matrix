@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useReducer } from 'react';
 import './App.css';
 import MainMenu from './components/MainMenu';
 import MemorizationPhase from './components/MemorizationPhase';
@@ -11,79 +11,121 @@ type GameState = 'main_menu' | 'memorization' | 'transition' | 'input' | 'feedba
 
 const HIGH_SCORE_KEY = 'memoryMatrixHighScore';
 
+type State = {
+  gameState: GameState;
+  digitLevel: number;
+  highScore: number;
+  sequence: string;
+  isCorrect: boolean;
+};
+
+type Action =
+  | { type: 'LOAD_HIGH_SCORE'; payload: number }
+  | { type: 'START_GAME' }
+  | { type: 'SET_GAME_STATE'; payload: GameState }
+  | { type: 'SET_SEQUENCE'; payload: string }
+  | { type: 'SUBMIT_RESULT'; payload: { wasCorrect: boolean } };
+
+const initialState: State = {
+  gameState: 'main_menu',
+  digitLevel: 1,
+  highScore: 1,
+  sequence: '',
+  isCorrect: false,
+};
+
+const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case 'LOAD_HIGH_SCORE':
+      return { ...state, highScore: action.payload };
+    case 'START_GAME':
+      return { ...state, digitLevel: 1, gameState: 'memorization', isCorrect: false };
+    case 'SET_GAME_STATE':
+      return { ...state, gameState: action.payload };
+    case 'SET_SEQUENCE':
+      return { ...state, sequence: action.payload };
+    case 'SUBMIT_RESULT': {
+      const newLevel = calculateNewLevel(state.digitLevel, action.payload.wasCorrect);
+      const newHighScore = Math.max(state.highScore, newLevel);
+      return {
+        ...state,
+        digitLevel: newLevel,
+        isCorrect: action.payload.wasCorrect,
+        highScore: newHighScore,
+        gameState: 'feedback',
+      };
+    }
+    default:
+      return state;
+  }
+};
+
 function App() {
-  const [gameState, setGameState] = useState<GameState>('main_menu');
-  const [digitLevel, setDigitLevel] = useState(1);
-  const [highScore, setHighScore] = useState(1);
-  const [sequence, setSequence] = useState('');
-  const [isCorrect, setIsCorrect] = useState(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   // Load high score from local storage on initial render
   useEffect(() => {
     const savedHighScore = localStorage.getItem(HIGH_SCORE_KEY);
     if (savedHighScore) {
-      setHighScore(parseInt(savedHighScore, 10));
+      dispatch({ type: 'LOAD_HIGH_SCORE', payload: parseInt(savedHighScore, 10) });
     }
   }, []);
 
+  // Sync high score to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem(HIGH_SCORE_KEY, state.highScore.toString());
+  }, [state.highScore]);
+
   // Effect for handling game state logic and timers
   useEffect(() => {
-    if (gameState === 'memorization') {
-      setSequence(generateSequence(digitLevel));
-      const memorizationTime = 1500 + 500 * digitLevel;
+    if (state.gameState === 'memorization') {
+      dispatch({ type: 'SET_SEQUENCE', payload: generateSequence(state.digitLevel) });
+      const memorizationTime = 1500 + 500 * state.digitLevel;
       const timer = setTimeout(() => {
-        setGameState('transition');
+        dispatch({ type: 'SET_GAME_STATE', payload: 'transition' });
       }, memorizationTime);
       return () => clearTimeout(timer);
     }
 
-    if (gameState === 'feedback') {
+    if (state.gameState === 'feedback') {
       const timer = setTimeout(() => {
-        setGameState('memorization');
+        dispatch({ type: 'SET_GAME_STATE', payload: 'memorization' });
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [gameState, digitLevel]);
+  }, [state.gameState, state.digitLevel]);
 
   const handleStartGame = () => {
-    setDigitLevel(1);
-    setGameState('memorization');
+    dispatch({ type: 'START_GAME' });
   };
 
   const handleSubmission = (inputValue: string) => {
-    const correct = validateInput(inputValue, sequence);
-    setIsCorrect(correct);
-    const newLevel = calculateNewLevel(digitLevel, correct);
-    setDigitLevel(newLevel);
-    if (newLevel > highScore) {
-      setHighScore(newLevel);
-      localStorage.setItem(HIGH_SCORE_KEY, newLevel.toString());
-    }
-    setGameState('feedback');
+    const correct = validateInput(inputValue, state.sequence);
+    dispatch({ type: 'SUBMIT_RESULT', payload: { wasCorrect: correct } });
   };
 
   // Render different components based on the game state
   const renderGameState = () => {
-    switch (gameState) {
+    switch (state.gameState) {
       case 'main_menu':
-        return <MainMenu onStartGame={handleStartGame} highScore={highScore} />;
+        return <MainMenu onStartGame={handleStartGame} highScore={state.highScore} />;
       case 'memorization':
-        return <MemorizationPhase sequence={sequence} />;
+        return <MemorizationPhase sequence={state.sequence} />;
       case 'transition':
-        return <button onClick={() => setGameState('input')}>Next</button>;
+        return <button onClick={() => dispatch({ type: 'SET_GAME_STATE', payload: 'input' })}>Next</button>;
       case 'input':
         return <InputPhase onSubmit={handleSubmission} />;
       case 'feedback':
-        return <FeedbackPhase isCorrect={isCorrect} correctSequence={sequence} />;
+        return <FeedbackPhase isCorrect={state.isCorrect} correctSequence={state.sequence} />;
       default:
-        return <MainMenu onStartGame={handleStartGame} highScore={highScore} />;
+        return <MainMenu onStartGame={handleStartGame} highScore={state.highScore} />;
     }
   };
 
   return (
     <div className="App">
-      <h2>High Score: {highScore}</h2>
-      <h2>Current Level: {digitLevel}</h2>
+      <h2>High Score: {state.highScore}</h2>
+      <h2>Current Level: {state.digitLevel}</h2>
       {renderGameState()}
     </div>
   );
