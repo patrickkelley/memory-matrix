@@ -6,6 +6,8 @@ import InputPhase from './components/InputPhase';
 import FeedbackPhase from './components/FeedbackPhase';
 import { generateSequence, validateInput, calculateNewLevel } from './lib/gameLogic';
 
+import StatDisplay from './components/StatDisplay';
+
 // Define the different states of the game
 type GameState = 'main_menu' | 'memorization' | 'transition' | 'input' | 'feedback';
 
@@ -124,8 +126,8 @@ function App() {
 
   return (
     <div className="App">
-      <h2>High Score: {state.highScore}</h2>
-      <h2>Current Level: {state.digitLevel}</h2>
+      <StatDisplay label="High Score" value={state.highScore} />
+      <StatDisplay label="Current Level" value={state.digitLevel} />
       {renderGameState()}
     </div>
   );
